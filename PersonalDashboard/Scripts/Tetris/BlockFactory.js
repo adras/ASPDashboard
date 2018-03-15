@@ -1,6 +1,5 @@
-﻿class BlockFactory {
-    static blockCount = 7;
-
+﻿
+class BlockFactory {
     static createLongBlock() {
         var blockArray = [
             [
@@ -30,6 +29,7 @@
         ];
         return blockArray;
     }
+
     static createLeftLBlock() {
         var blockArray = [
             [

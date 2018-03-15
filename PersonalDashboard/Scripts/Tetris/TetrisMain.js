@@ -18,7 +18,8 @@ var blockArrays;
 var gameArea;
 
 var state = {
-    currentBlockArray: 0,
+    currentBlockIndex: 0,
+    currentBlockRotation: 0,
     blockXPos: 0,
     blockYPos: 0,
     pressedKeys: {
@@ -84,50 +85,30 @@ function update(progress) {
 function drawBlock() {
     gameCanvasContext.fillStyle = "#FFAA00";
 
-    for (var i = 0; i < state.currentBlockArray.length; i++) {
-        for (var j = 0; j < state.currentBlockArray[i].length; j++) {
+    var blockArray = blockArrays[state.currentBlockIndex][state.currentBlockRotation];
+
+    for (var i = 0; i < blockArray.length; i++) {
+        for (var j = 0; j < blockArray[i].length; j++) {
             var xPos = (state.blockXPos + i) * blockSizeX;
             var yPos = (state.blockYPos + j) * blockSizeY;
 
-            if (state.currentBlockArray[i][j] === 1) {
+            if (blockArray[i][j] === 1) {
                 gameCanvasContext.fillRect(xPos, yPos, blockSizeX, blockSizeY);
             }
         }
     }
 }
 
-function rotateBlockArrayRight(blockArray) {
-    // See: https://stackoverflow.com/questions/42519/how-do-you-rotate-a-two-dimensional-array
-    var resultArray = new Array(4);
-
-    for (var i = 0; i < 4; ++i) {
-        resultArray[i] = new Array(4);
-        for (var j = 0; j < 4; ++j) {
-            resultArray[i][j] = blockArray[4 - j - 1][i];
-        }
-    }
-    return resultArray;
-}
-
-function rotateBlockArrayLeft(blockArray) {
-    var resultArray = new Array(4);
-
-    for (var i = 0; i < 4; ++i) {
-        resultArray[i] = new Array(4);
-        for (var j = 0; j < 4; ++j) {
-            resultArray[i][j] = blockArray[j][4 - i - 1];
-        }
-    }
-    return resultArray;
-}
-
-
 function rotateLeft() {
-    state.currentBlockArray = rotateBlockArrayLeft(state.currentBlockArray);
+    state.currentBlockRotation++;
+    if (state.currentBlockRotation > 3)
+        state.currentBlockRotation = 0;
 }
 
 function rotateRight() {
-    state.currentBlockArray = rotateBlockArrayRight(state.currentBlockArray);
+    state.currentBlockRotation--;
+    if (state.currentBlockRotation < 0)
+        state.currentBlockRotation = 3;
 }
 
 function drawSimpleBlock() {
@@ -209,58 +190,20 @@ function initializeEvents() {
 }
 
 function initializeBlocks() {
-    blockArrays = new Array(6);
-
-    blockArrays[0] = [
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0]];
-
-    blockArrays[1] = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 1, 0, 0],
-        [1, 1, 1, 0]];
-
-    blockArrays[2] = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 1, 1, 0],
-        [1, 1, 0, 0]];
-
-    blockArrays[3] = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [1, 1, 0, 0],
-        [0, 1, 1, 0]];
-
-    blockArrays[4] = [
-        [0, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 1, 0, 0]];
-
-    blockArrays[5] = [
-        [0, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 1, 0, 0],
-        [1, 1, 0, 0]];
-
-    // Blocks above are defined rotated by 90 degrees, rotate them again so axis are not swapped
-    for (var i = 0; i < 6; i++) {
-        blockArrays[i] = rotateBlockArrayLeft(blockArrays[i]);
-        //blockArrays[i] = rotateLeft(blockArrays[i]);
-    }
-
-    // set the first block to a random number
-    setCurrentBlockToRandom();
+    blockArrays = new Array(7);
+    blockArrays[0] = BlockFactory.createCubeBlock();
+    blockArrays[1] = BlockFactory.createLeftLBlock();
+    blockArrays[2] = BlockFactory.createLongBlock();
+    blockArrays[3] = BlockFactory.createRightLBlock();
+    blockArrays[4] = BlockFactory.createTBlock();
+    blockArrays[5] = BlockFactory.createZBlockLeft();
+    blockArrays[6] = BlockFactory.createZBlockRight();
 }
 
 function setCurrentBlockToRandom() {
-    var newBlockNumber = randomRange(0, 5);
-    var blockArray = blockArrays[newBlockNumber];
-    state.currentBlockArray = blockArray;
+    var newBlockNumber = randomRange(0, 6);
+
+    state.currentBlockIndex = newBlockNumber;
 }
 
 function initialize() {
