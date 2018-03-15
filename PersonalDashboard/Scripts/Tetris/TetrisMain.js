@@ -1,7 +1,7 @@
 ﻿var blockSizeX = 20;
 var blockSizeY = 20;
 
-var blockCountX = 8;
+var blockCountX = 10;
 var blockCountY = 40;
 
 var gameWidth = blockCountX * blockSizeX;
@@ -20,7 +20,7 @@ var gameArea;
 var state = {
     currentBlockIndex: 0,
     currentBlockRotation: 0,
-    blockXPos: 0,
+    blockXPos: blockCountX / 2,
     blockYPos: 0,
     pressedKeys: {
         left: false,
@@ -29,7 +29,8 @@ var state = {
         down: false,
         rotateLeft: false,
         rotateRight: false,
-        newBlock: false
+        newBlock: false,
+        placeBlock: false
     }
 };
 
@@ -47,6 +48,65 @@ function randomRange(min, max) {
     return result;
 }
 
+function validateBlockPosition(xPos, yPos) {
+    if (typeof xPos === "undefined")
+        xPos = state.blockXPos;
+    if (typeof yPos === "undefined")
+        yPos = state.blockYPos;
+
+    var blockArray = getCurrentBlockArray();
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            var deltaX = xPos + i;
+            var deltaY = yPos + j;
+            if (blockArray[i][j] === 1 && deltaX < 0) {
+                return false;
+            }
+            if (blockArray[i][j] === 1 && deltaY < 0) {
+                return false;
+            }
+            if (blockArray[i][j] === 1 && deltaX >= blockCountX) {
+                return false;
+            }
+            if (blockArray[i][j] === 1 && deltaY >= blockCountY) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function blockCollidesWithOtherBlocks(xPos, yPos) {
+    if (typeof xPos === "undefined")
+        xPos = state.blockXPos;
+    if (typeof yPos === "undefined")
+        yPos = state.blockYPos;
+
+    var blockArray = getCurrentBlockArray();
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            var deltaX = xPos + i;
+            var deltaY = yPos + j;
+
+            // first check if the block is at the bottom which is considered a collision as well
+            if (blockArray[i][j] === 1 && deltaY >= blockCountY) {
+                return true;
+            }
+
+            if (blockArray[i][j] === 1 && gameArea[deltaX][deltaY] === 1) {
+                return true;
+            }
+
+        }
+    }
+    return false;
+
+}
+
+function getCurrentBlockArray() {
+    return blockArrays[state.currentBlockIndex][state.currentBlockRotation];
+}
+
 function update(progress) {
     textDebug1.innerHTML = progress;
 
@@ -54,25 +114,49 @@ function update(progress) {
     if (lastUpdate < gameSpeed)
         return;
 
+    if (!blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
+        state.blockYPos++;
+    } else {
+        placeCurrentBlock();
+    }
+
     lastUpdate = 0;
 
     if (state.pressedKeys.left) {
-        state.blockXPos = Math.max(0, state.blockXPos - 1);
+        if (validateBlockPosition(state.blockXPos - 1, state.blockYPos)) {
+            state.blockXPos--;
+        }
     }
+
     if (state.pressedKeys.right) {
-        state.blockXPos = Math.min(blockCountX - 1, state.blockXPos + 1);
+        if (validateBlockPosition(state.blockXPos + 1, state.blockYPos)) {
+            state.blockXPos++;
+        }
     }
+
     if (state.pressedKeys.up) {
-        // No cheating!
-        state.blockYPos = Math.max(0, state.blockYPos - 1);
+        // YES cheating!
+        if (validateBlockPosition(state.blockXPos, state.blockYPos - 1)) {
+            state.blockYPos--;
+        }
     }
+
     if (state.pressedKeys.down) {
-        state.blockYPos = Math.min(blockCountY - 1, state.blockYPos + 1);
+        if (validateBlockPosition(state.blockXPos, state.blockYPos + 1)) {
+            state.blockYPos++;
+        }
+        if (blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
+            placeCurrentBlock();
+        }
+    }
+    if (state.pressedKeys.placeBlock) {
+        placeCurrentBlock();
     }
 
     if (state.pressedKeys.rotateLeft) {
         rotateLeft();
     }
+
     if (state.pressedKeys.rotateRight) {
         rotateRight();
     }
@@ -82,10 +166,26 @@ function update(progress) {
     }
 }
 
-function drawBlock() {
-    gameCanvasContext.fillStyle = "#FFAA00";
+function placeCurrentBlock() {
+    var blockArray = getCurrentBlockArray();
+    for (var i = 0; i < blockArray.length; i++) {
+        for (var j = 0; j < blockArray[i].length; j++) {
+            var deltaX = state.blockXPos + i;
+            var deltaY = state.blockYPos + j;
 
-    var blockArray = blockArrays[state.currentBlockIndex][state.currentBlockRotation];
+            if (blockArray[i][j] === 1)
+                gameArea[deltaX][deltaY] = 1;
+        }
+    }
+    setCurrentBlockToRandom();
+    state.blockXPos = blockCountX / 2;
+    state.blockYPos = 0;
+}
+
+function drawBlock(colorString) {
+    gameCanvasContext.fillStyle = colorString;
+
+    var blockArray = getCurrentBlockArray();
 
     for (var i = 0; i < blockArray.length; i++) {
         for (var j = 0; j < blockArray[i].length; j++) {
@@ -99,23 +199,52 @@ function drawBlock() {
     }
 }
 
+function drawGameArea() {
+    for (var i = 0; i < blockCountX; i++) {
+        for (var j = 0; j < blockCountY; j++) {
+            if (gameArea[i][j] === 1)
+                drawSimpleBlock("#000000", i, j);
+        }
+    }
+}
+
 function rotateLeft() {
     state.currentBlockRotation++;
     if (state.currentBlockRotation > 3)
         state.currentBlockRotation = 0;
+
+    // Check if the block is inside the game area, if not rotate it back
+    if (!validateBlockPosition()) {
+        rotateRight();
+    }
+
+    // If we get a collision with other blocks, also rotate it back
+    if (blockCollidesWithOtherBlocks()) {
+        rotateRight();
+    }
 }
 
 function rotateRight() {
     state.currentBlockRotation--;
     if (state.currentBlockRotation < 0)
         state.currentBlockRotation = 3;
+
+    // Check if the block is inside the game area, if not rotate it back
+    if (!validateBlockPosition()) {
+        rotateLeft();
+    }
+
+    // If we get a collision with other blocks, also rotate it back
+    if (blockCollidesWithOtherBlocks()) {
+        rotateLeft();
+    }
 }
 
-function drawSimpleBlock() {
-    var xPos = state.blockXPos * blockSizeX;
-    var yPos = state.blockYPos * blockSizeY;
+function drawSimpleBlock(colorString, xBlockPos, yBlockPos) {
+    var xPos = xBlockPos * blockSizeX;
+    var yPos = yBlockPos * blockSizeY;
 
-    gameCanvasContext.fillStyle = "#FFAA00";
+    gameCanvasContext.fillStyle = colorString;
     gameCanvasContext.fillRect(xPos, yPos, blockSizeX, blockSizeY);
 }
 
@@ -141,7 +270,8 @@ function draw() {
         gameCanvasContext.fillStyle = "#00FF00";
     }
 
-    drawBlock();
+    drawBlock("#FFAA00");
+    drawGameArea();
     //drawSimpleBlock();
 
 }
@@ -213,6 +343,7 @@ function initialize() {
 
     initializeCanvas();
     initializeBlocks();
+    initializeGameArea();
 
     // This has to be called last since it starts the game
     initializeEvents();
@@ -228,7 +359,8 @@ var keyMap = {
     83: 'down',
     74: 'rotateLeft',
     75: 'rotateRight',
-    79: 'newBlock'
+    79: 'newBlock',
+    80: 'placeBlock'
 };
 
 $(document).ready(initialize);
