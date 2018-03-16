@@ -162,11 +162,11 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\Tetris\BlockFactory.js" />
-    <Content Include="Scripts\Tetris\TetrisMain.js" />
-    <Content Include="Scripts\Tetris\TODO.txt" />
-    <TypeScriptCompile Include="Scripts\Tetris\UpdateTimer.ts" />
-    <Content Include="Tetris.aspx" />
+    <Content Include="Scripts\BlockGame\BlockFactory.js" />
+    <Content Include="Scripts\BlockGame\BlockGameMain.js" />
+    <Content Include="Scripts\BlockGame\TODO.txt" />
+    <TypeScriptCompile Include="Scripts\BlockGame\UpdateTimer.ts" />
+    <Content Include="BlockGame.aspx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -251,12 +251,12 @@
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Tetris.aspx.cs">
-      <DependentUpon>Tetris.aspx</DependentUpon>
+    <Compile Include="BlockGame.aspx.cs">
+      <DependentUpon>BlockGame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Tetris.aspx.designer.cs">
-      <DependentUpon>Tetris.aspx</DependentUpon>
+    <Compile Include="BlockGame.aspx.designer.cs">
+      <DependentUpon>BlockGame.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -34,10 +34,10 @@ namespace PersonalDashboard
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                             "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Tetris").Include(
-                "~/Scripts/Tetris/TetrisMain.js",
-                "~/Scripts/Tetris/BlockFactory.js",
-                "~/Scripts/Tetris/UpdateTimer.js"));
+            bundles.Add(new ScriptBundle("~/bundles/BlockGame").Include(
+                "~/Scripts/BlockGame/BlockGameMain.js",
+                "~/Scripts/BlockGame/BlockFactory.js",
+                "~/Scripts/BlockGame/UpdateTimer.js"));
 
             ScriptManager.ScriptResourceMapping.AddDefinition(
                 "respond",
