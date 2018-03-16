@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Block Game" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="BlockGame.aspx.cs" Inherits="PersonalDashboard.WebForm2" %>
+﻿<%@ Page Title="Block Game" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="BlockGame.aspx.cs" Inherits="PersonalDashboard.BlockGame" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 

@@ -162,6 +162,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="News.aspx" />
     <Content Include="Scripts\BlockGame\BlockFactory.js" />
     <Content Include="Scripts\BlockGame\BlockGameMain.js" />
     <Content Include="Scripts\BlockGame\TODO.txt" />
@@ -228,6 +229,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="News.aspx.cs">
+      <DependentUpon>News.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="News.aspx.designer.cs">
+      <DependentUpon>News.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.Master.cs">
