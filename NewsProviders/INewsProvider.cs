@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NewsProviders
 {
-    interface INewsProvider
+    public interface INewsProvider
     {
         IEnumerable<NewsItem> GetNewsItemFromHtmlDocument();
     }
