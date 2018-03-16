@@ -129,13 +129,13 @@ function update(progress) {
 
     if (keyboardTimer.isElapsed()) {
         if (state.pressedKeys.left) {
-            if (validateBlockPosition(state.blockXPos - 1, state.blockYPos)) {
+            if (validateBlockPosition(state.blockXPos - 1, state.blockYPos) && !blockCollidesWithOtherBlocks(state.blockXPos - 1, state.blockYPos)) {
                 state.blockXPos--;
             }
         }
 
         if (state.pressedKeys.right) {
-            if (validateBlockPosition(state.blockXPos + 1, state.blockYPos)) {
+            if (validateBlockPosition(state.blockXPos + 1, state.blockYPos) && !blockCollidesWithOtherBlocks(state.blockXPos + 1, state.blockYPos)) {
                 state.blockXPos++;
             }
         }
