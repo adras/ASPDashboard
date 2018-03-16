@@ -36,7 +36,8 @@ namespace PersonalDashboard
 
             bundles.Add(new ScriptBundle("~/bundles/Tetris").Include(
                 "~/Scripts/Tetris/TetrisMain.js",
-                "~/Scripts/Tetris/BlockFactory.js"));
+                "~/Scripts/Tetris/BlockFactory.js",
+                "~/Scripts/Tetris/UpdateTimer.js"));
 
             ScriptManager.ScriptResourceMapping.AddDefinition(
                 "respond",

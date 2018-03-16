@@ -8,7 +8,5 @@
     <canvas id="canvasGameArea"></canvas>
 <br />
 <br />
-<div id="textDebug1"></div>
-<div id="textDebug2"></div>
-<div id="textDebug3"></div>
+<div id="textScore"></div>
 </asp:Content>

@@ -7,11 +7,13 @@ var blockCountY = 40;
 var gameWidth = blockCountX * blockSizeX;
 var gameHeight = blockCountY * blockSizeY;
 
-// millisecond interval between updates
-var gameSpeed = 100;
-
 var lastRender = 0;
-var lastUpdate = 0;
+
+var keyboardInterval = 100;
+var gameSpeedInterval = 500;
+var gameSpeedTimer;
+var keyboardTimer;
+
 
 var blockArrays;
 
@@ -22,6 +24,7 @@ var state = {
     currentBlockRotation: 0,
     blockXPos: blockCountX / 2,
     blockYPos: 0,
+    score: 0,
     pressedKeys: {
         left: false,
         right: false,
@@ -36,15 +39,11 @@ var state = {
 
 var gameCanvas;
 var gameCanvasContext;
-
-var textDebug1;
-var textDebug2;
-var textDebug3;
+var textScore;
 
 function randomRange(min, max) {
     // See: https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
     var result = Math.floor(Math.random() * (max - min + 1) + min);
-    textDebug2.innerHTML = result;
     return result;
 }
 
@@ -62,12 +61,15 @@ function validateBlockPosition(xPos, yPos) {
             if (blockArray[i][j] === 1 && deltaX < 0) {
                 return false;
             }
+
             if (blockArray[i][j] === 1 && deltaY < 0) {
                 return false;
             }
+
             if (blockArray[i][j] === 1 && deltaX >= blockCountX) {
                 return false;
             }
+
             if (blockArray[i][j] === 1 && deltaY >= blockCountY) {
                 return false;
             }
@@ -108,61 +110,79 @@ function getCurrentBlockArray() {
 }
 
 function update(progress) {
-    textDebug1.innerHTML = progress;
+    //lastUpdate += progress;
+    //if (lastUpdate < gameSpeed)
+    //    return;
 
-    lastUpdate += progress;
-    if (lastUpdate < gameSpeed)
-        return;
+    gameSpeedTimer.update(progress);
+    keyboardTimer.update(progress);
 
-    if (!blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
-        state.blockYPos++;
-    } else {
-        placeCurrentBlock();
-    }
-
-    lastUpdate = 0;
-
-    if (state.pressedKeys.left) {
-        if (validateBlockPosition(state.blockXPos - 1, state.blockYPos)) {
-            state.blockXPos--;
-        }
-    }
-
-    if (state.pressedKeys.right) {
-        if (validateBlockPosition(state.blockXPos + 1, state.blockYPos)) {
-            state.blockXPos++;
-        }
-    }
-
-    if (state.pressedKeys.up) {
-        // YES cheating!
-        if (validateBlockPosition(state.blockXPos, state.blockYPos - 1)) {
-            state.blockYPos--;
-        }
-    }
-
-    if (state.pressedKeys.down) {
-        if (validateBlockPosition(state.blockXPos, state.blockYPos + 1)) {
+    if (gameSpeedTimer.isElapsed()) {
+        if (!blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
             state.blockYPos++;
+        } else {
+            placeCurrentBlock();
+            return;
         }
-        if (blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
+    }
+
+
+    if (keyboardTimer.isElapsed()) {
+        if (state.pressedKeys.left) {
+            if (validateBlockPosition(state.blockXPos - 1, state.blockYPos)) {
+                state.blockXPos--;
+            }
+        }
+
+        if (state.pressedKeys.right) {
+            if (validateBlockPosition(state.blockXPos + 1, state.blockYPos)) {
+                state.blockXPos++;
+            }
+        }
+
+        if (state.pressedKeys.up) {
+            // YES cheating!
+            if (validateBlockPosition(state.blockXPos, state.blockYPos - 1)) {
+                state.blockYPos -= 2;
+            }
+        }
+
+        if (state.pressedKeys.down) {
+            if (blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
+                placeCurrentBlock();
+            }
+            if (validateBlockPosition(state.blockXPos, state.blockYPos + 1)) {
+                state.blockYPos++;
+            }
+        }
+        if (state.pressedKeys.placeBlock) {
             placeCurrentBlock();
         }
-    }
-    if (state.pressedKeys.placeBlock) {
-        placeCurrentBlock();
+
+        if (state.pressedKeys.rotateLeft) {
+            rotateLeft();
+        }
+
+        if (state.pressedKeys.rotateRight) {
+            rotateRight();
+        }
+
+        if (state.pressedKeys.newBlock) {
+            setCurrentBlockToRandom();
+        }
+
     }
 
-    if (state.pressedKeys.rotateLeft) {
-        rotateLeft();
-    }
 
-    if (state.pressedKeys.rotateRight) {
-        rotateRight();
-    }
+    updateScore();
+}
 
-    if (state.pressedKeys.newBlock) {
-        setCurrentBlockToRandom();
+function createNewBlock() {
+    setCurrentBlockToRandom();
+    state.blockXPos = blockCountX / 2;
+    state.blockYPos = 0;
+    if (blockCollidesWithOtherBlocks()) {
+        alert("Game Over");
     }
 }
 
@@ -177,9 +197,39 @@ function placeCurrentBlock() {
                 gameArea[deltaX][deltaY] = 1;
         }
     }
-    setCurrentBlockToRandom();
-    state.blockXPos = blockCountX / 2;
-    state.blockYPos = 0;
+    createNewBlock();
+    state.score += 100;
+
+    removeCompleteLines();
+}
+
+function removeLine(yPos) {
+    for (var j = yPos; j > 0; j--) {
+        for (var i = 0; i < blockCountX; i++) {
+            gameArea[i][j] = gameArea[i][j - 1];
+        }
+    }
+}
+
+function removeCompleteLines() {
+    var removedLines = 0;
+    for (var j = blockCountY - 1; j >= 0; j--) {
+        var blockCount = 0;
+        for (var i = 0; i < blockCountX; i++) {
+            if (gameArea[i][j] === 1) {
+                blockCount++;
+            }
+        }
+        if (blockCount === blockCountX) {
+            removeLine(j);
+            removedLines++;
+            j++;
+        }
+        blockCount = 0;
+    }
+
+    if (removedLines > 0)
+        state.score += Math.pow(removedLines + 1, 2) * 1000;
 }
 
 function drawBlock(colorString) {
@@ -287,8 +337,6 @@ function loop(timestamp) {
 }
 
 function keydown(event) {
-    textDebug3.innerHTML = event.keyCode;
-
     var key = keyMap[event.keyCode];
     state.pressedKeys[key] = true;
 }
@@ -336,19 +384,27 @@ function setCurrentBlockToRandom() {
     state.currentBlockIndex = newBlockNumber;
 }
 
-function initialize() {
-    textDebug1 = $("#textDebug1")[0];
-    textDebug2 = $("#textDebug2")[0];
-    textDebug3 = $("#textDebug3")[0];
+function initializeScore() {
+    textScore = $("#textScore")[0];
+    updateScore();
+}
 
+function updateScore() {
+    textScore.innerHTML = "Score: " + state.score;
+}
+
+function initialize() {
     initializeCanvas();
     initializeBlocks();
     initializeGameArea();
 
+    gameSpeedTimer = new UpdateTimer(gameSpeedInterval);
+    keyboardTimer = new UpdateTimer(keyboardInterval);
+
+    initializeScore();
+
     // This has to be called last since it starts the game
     initializeEvents();
-
-    alert("Hello World");
 }
 
 

@@ -164,6 +164,8 @@
     </Content>
     <Content Include="Scripts\Tetris\BlockFactory.js" />
     <Content Include="Scripts\Tetris\TetrisMain.js" />
+    <Content Include="Scripts\Tetris\TODO.txt" />
+    <TypeScriptCompile Include="Scripts\Tetris\UpdateTimer.ts" />
     <Content Include="Tetris.aspx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
