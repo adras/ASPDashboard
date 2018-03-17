@@ -1,0 +1,20 @@
+﻿@page "{id:int}"
+
+@model PersonalDashboard.Pages.EditNoteModel
+@{
+    ViewData["Title"] = "EditNote";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>EditNote: @Model.Note.Id</h2>
+
+<form method="post">
+    <div asp-validation-summary="All"></div>
+    <input asp-for="Note.Id" type="hidden" />
+    <div >
+        <label asp-for="Note.Content"></label>
+        <input asp-for="Note.Content" />
+        <span asp-validation-for="Note.Content"></span>
+    </div>
+    <button type="submit">Edit</button>
+</form>

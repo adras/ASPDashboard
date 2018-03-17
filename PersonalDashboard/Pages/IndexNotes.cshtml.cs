@@ -21,9 +21,20 @@ namespace PersonalDashboard.Pages
             this.dbContext = dbContext;
         }
 
-        public async Task OnGet()
+        public async Task OnGetAsync()
         {
             Notes = await dbContext.Notes.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            Note note = await dbContext.Notes.FindAsync(id);
+            if (note != null)
+            {
+                dbContext.Notes.Remove(note);
+                await dbContext.SaveChangesAsync();
+            }
+            return RedirectToPage("./IndexNotes");
         }
     }
 }
