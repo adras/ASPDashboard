@@ -1,0 +1,44 @@
+﻿@page
+@model PersonalDashboard.Pages.NewsModel
+@using NewsProviders
+@{
+    ViewData["Title"] = "News";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<style>
+    #heise_div, #golem_div {
+        width: 400px;
+        /*height: 100px;*/
+        border: 1px solid black;
+        margin: 10px;
+        padding: 5px;
+        float: left;
+    }
+</style>
+
+
+<div id="heise_div">
+    <h2>Heise - News</h2>
+    @foreach (NewsItem heiseNewsItem in Model.HeiseNews)
+    {
+        <a href="@string.Format("http://heise.de{0}", heiseNewsItem.Link)">
+            <div style="font-size: 14px; font-weight:bold">@heiseNewsItem.Title</div><br />
+        </a>
+        <div>@Html.Raw(heiseNewsItem.Teaser)</div>
+        <br />
+    }
+</div>
+
+<div id="golem_div">
+    <h2>Golem - News</h2>
+    @foreach (NewsItem golemNewsItem in Model.GolemNews)
+    {
+        <a href="@string.Format("http://golem.de{0}", golemNewsItem.Link)">
+            <div style="font-size: 14px; font-weight:bold">@Html.Raw(golemNewsItem.Title)</div><br />
+        </a>
+        <div>@Html.Raw(golemNewsItem.Teaser)</div>
+        <br />
+    }
+</div>
+<br style="clear:both" />

@@ -46,8 +46,8 @@
   <ItemGroup>
     <Compile Include="GolemNewsProvider.cs" />
     <Compile Include="HeiseNewsProvider.cs" />
-    <Compile Include="INewsProvider.cs" />
     <Compile Include="NewsItem.cs" />
+    <Compile Include="NewsProviderBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableNewsProvider.cs" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -27,9 +28,9 @@ namespace NewsProviders
             return newsItems.GetEnumerator();
         }
 
-        public QueryableNewsProvider(INewsProvider newsProvider)
+        public QueryableNewsProvider(NewsProviderBase newsProvider, Stream documentStream)
         {
-            this.newsItems = newsProvider.GetNewsItemFromHtmlDocument();
+            this.newsItems = newsProvider.GetNewsItemsFromStream(documentStream);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

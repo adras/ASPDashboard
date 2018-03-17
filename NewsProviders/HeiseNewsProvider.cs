@@ -1,25 +1,20 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NewsProviders
 {
-    public class HeiseNewsProvider : INewsProvider
+    public class HeiseNewsProvider : NewsProviderBase
     {
-        string path;
-
-        public HeiseNewsProvider(string path)
-        {
-            this.path = path;
-        }
-
-        public IEnumerable<NewsItem> GetNewsItemFromHtmlDocument()
+        public override IEnumerable<NewsItem> GetNewsItemsFromStream(Stream documentStream)
         {
             HtmlDocument doc = new HtmlDocument();
-            doc.Load(path, Encoding.Default);
+            doc.Load(documentStream, Encoding.Default);
 
             HtmlNodeCollection allArticleContainers = doc.DocumentNode.SelectNodes("/descendant::article");
 
@@ -37,5 +32,6 @@ namespace NewsProviders
 
             return items;
         }
+
     }
 }

@@ -12,13 +12,16 @@ namespace NewsProvidersTest
         [Fact]
         public void GolemNewsProvider_TestProvider_ItemCountCorrect()
         {
-            GolemNewsProvider provider = new GolemNewsProvider(Constants.golemNewsFileName);
-            List<NewsItem> newsItems = provider.GetNewsItemFromHtmlDocument().ToList();
-            Assert.Equal(23, newsItems.Count);
-
-            foreach (var item in newsItems)
+            using (Stream fileStream = File.OpenRead(Constants.golemNewsFileName))
             {
-                File.AppendAllText(@"D:\news.txt", $"[InlineData(\"{item.Title}\",\"{item.Link}\")]\r\n");
+                GolemNewsProvider provider = new GolemNewsProvider();
+                List<NewsItem> newsItems = provider.GetNewsItemsFromStream(fileStream).ToList();
+                Assert.Equal(23, newsItems.Count);
+
+                foreach (var item in newsItems)
+                {
+                    File.AppendAllText(@"D:\news.txt", $"[InlineData(\"{item.Title}\",\"{item.Link}\")]\r\n");
+                }
             }
         }
 
@@ -48,9 +51,12 @@ namespace NewsProvidersTest
         [InlineData("Julia Reda: Mit Datenschutz gegen Werbemonopole", "https://www.golem.de/news/julia-reda-leistungsschutzrecht-ist-nur-machtdemonstration-der-verlage-1803-133330.html")]
         public void GolemNewsProvider_TestProvider_ProvidesCorrectItems(string title, string link)
         {
-            GolemNewsProvider provider = new GolemNewsProvider(Constants.golemNewsFileName);
-            List<NewsItem> newsItems = provider.GetNewsItemFromHtmlDocument().ToList();
-            Assert.Contains(provider.GetNewsItemFromHtmlDocument(), item => item.Title == title && item.Link == link);
+            using (Stream fileStream = File.OpenRead(Constants.golemNewsFileName))
+            {
+                GolemNewsProvider provider = new GolemNewsProvider();
+                List<NewsItem> newsItems = provider.GetNewsItemsFromStream(fileStream).ToList();
+                Assert.Contains(newsItems, item => item.Title == title && item.Link == link);
+            }
         }
     }
 }

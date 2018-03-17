@@ -1,6 +1,7 @@
 ﻿using NewsProviders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -12,9 +13,12 @@ namespace NewsProvidersTest
         [Fact]
         public void HeiseNewsProvider_TestProvider_ItemCountCorrect()
         {
-            HeiseNewsProvider provider = new HeiseNewsProvider(Constants.heiseNewsFileName);
-            List<NewsItem> news = provider.GetNewsItemFromHtmlDocument().ToList();
-            Assert.Equal(81, news.Count);
+            using (Stream fileStream = File.OpenRead(Constants.heiseNewsFileName))
+            {
+                HeiseNewsProvider provider = new HeiseNewsProvider();
+                List<NewsItem> news = provider.GetNewsItemsFromStream(fileStream).ToList();
+                Assert.Equal(81, news.Count);
+            }
         }
 
         [Theory]
@@ -101,13 +105,15 @@ namespace NewsProvidersTest
         [InlineData("Gratis Virenschutz für Windows 10", "https://www.heise.de/download/specials/Gratis-Virenschutz-fuer-Windows-10-3148982")]
         public void HeiseNewsProvider_TestProvider_ProvidesCorrectItems(string title, string link)
         {
-            HeiseNewsProvider provider = new HeiseNewsProvider(Constants.heiseNewsFileName);
-            
-            // Uncomment to create inline data attributes for this test
-            //List<NewsItem> news = provider.GetNewsItemFromHtmlDocument().ToList();
-            //TestCreationHelper.DumpItemsAsInlineDataToFile(@"D:\news.txt", news);
-            Assert.Contains(provider.GetNewsItemFromHtmlDocument(), item => item.Title == title && item.Link == link);
+            using (Stream fileStream = File.OpenRead(Constants.heiseNewsFileName))
+            {
+                HeiseNewsProvider provider = new HeiseNewsProvider();
 
+                // Uncomment to create inline data attributes for this test
+                //List<NewsItem> news = provider.GetNewsItemFromHtmlDocument().ToList();
+                //TestCreationHelper.DumpItemsAsInlineDataToFile(@"D:\news.txt", news);
+                Assert.Contains(provider.GetNewsItemsFromStream(fileStream), item => item.Title == title && item.Link == link);
+            }
         }
     }
 }
