@@ -1,5 +1,0 @@
-﻿Time spent on tetris: 5 hours
-
-* add button to restart game
-* add score to highscore database (doesn't exist yet)
-* Update project to typescript?
