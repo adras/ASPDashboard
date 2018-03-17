@@ -1,0 +1,33 @@
+﻿@page
+@model PersonalDashboard.Pages.IndexNotesModel
+@{
+    ViewData["Title"] = "IndexNotes";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>IndexNotes</h2>
+
+<form method="post">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Note note in Model.Notes)
+            {
+                <tr>
+                    <td>@note.Id</td>
+                    <td>@note.Content</td>
+                    <td>
+                    <a asp-page="./EditNote" asp-route-id="@note.Id">Edit</a>
+                    edit delete</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</form>

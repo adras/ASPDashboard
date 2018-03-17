@@ -1,0 +1,13 @@
+﻿@page
+@model PersonalDashboard.Pages.CreateNotes
+@{
+    ViewData["Title"] = "CreateNotes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>CreateNews</h2>
+
+<form method="post">
+    <div>NoteText</div><input asp-for="Note.Content" />
+    <input type="submit" />
+</form>
