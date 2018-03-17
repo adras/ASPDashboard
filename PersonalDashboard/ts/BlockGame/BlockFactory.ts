@@ -1,10 +1,11 @@
-var BlockGame;
-(function (BlockGame) {
-    class BlockFactory {
+﻿namespace BlockGame {
+    export class BlockFactory {
         constructor() {
+
         }
-        static createLongBlock() {
-            let blockArray = [
+
+        static createLongBlock(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 1, 0, 0],
                     [0, 1, 0, 0],
@@ -32,8 +33,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createLeftLBlock() {
-            let blockArray = [
+
+        static createLeftLBlock(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 0, 0, 0],
@@ -61,8 +63,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createRightLBlock() {
-            let blockArray = [
+
+        static createRightLBlock(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 0, 0, 0],
@@ -90,8 +93,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createCubeBlock() {
-            let blockArray = [
+
+        static createCubeBlock(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 1, 1, 0],
@@ -119,8 +123,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createTBlock() {
-            let blockArray = [
+
+        static createTBlock(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 1, 0, 0],
@@ -148,8 +153,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createZBlockLeft() {
-            let blockArray = [
+
+        static createZBlockLeft(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 0, 0, 0],
@@ -177,8 +183,9 @@ var BlockGame;
             ];
             return blockArray;
         }
-        static createZBlockRight() {
-            let blockArray = [
+
+        static createZBlockRight(): number[][][] {
+            let blockArray: number[][][] = [
                 [
                     [0, 0, 0, 0],
                     [0, 0, 0, 0],
@@ -206,7 +213,6 @@ var BlockGame;
             ];
             return blockArray;
         }
+
     }
-    BlockGame.BlockFactory = BlockFactory;
-})(BlockGame || (BlockGame = {}));
-//# sourceMappingURL=BlockFactory.js.map
+}

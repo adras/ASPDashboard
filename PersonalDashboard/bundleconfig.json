@@ -8,6 +8,19 @@
       "wwwroot/css/site.css"
     ]
   },
+  //{
+  //  "outputFileName": "wwwroot/js/BlockGame.min.js",
+  //  "inputFiles": [
+  //    "ts/BlockGame/BlockFactory.js",
+  //    "ts/BlockGame/BlockGameMain.js",
+  //    "ts/BlockGame/UpdateTimer.js"
+  //  ],
+  //  "minify": {
+  //    "enabled": true,
+  //    "renameLocals": true
+  //  },
+  //  "sourceMap": false
+  //},
   {
     "outputFileName": "wwwroot/js/site.min.js",
     "inputFiles": [
