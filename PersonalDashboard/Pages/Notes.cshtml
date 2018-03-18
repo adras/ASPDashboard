@@ -1,0 +1,43 @@
+﻿@page
+@model PersonalDashboard.Pages.NotesModel
+@{
+    ViewData["Title"] = "Notes";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>Notes</h2>
+<!-- Display notes -->
+<form method="post">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Note note in Model.Notes)
+            {
+                <tr>
+                    <td>@note.Id</td>
+                    <td id="@string.Format("note-id-{0}", @note.Id)">@note.Content</td>
+                    <td>
+                        <a asp-page="./EditNote" asp-route-id="@note.Id">Edit</a>
+                        <button type="submit" asp-page-handler="DeleteNote" asp-route-id="@note.Id">Delete</button>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</form>
+
+<!-- Create note -->
+<form method="post">
+    <div asp-validation-summary="All"></div>
+    <p>NoteContent</p>
+    <input asp-for="Note.Content">
+    <br />
+    <button type="submit" asp-page-handler="CreateNote">Create</button>
+</form>

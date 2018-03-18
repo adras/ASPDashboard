@@ -49,7 +49,7 @@ namespace PersonalDashboard.Pages
                 throw new Exception($"Note: '{Note.Id}' could not be edited", ex);
             }
 
-            return RedirectToPage("/IndexNotes");
+            return RedirectToPage("/Notes");
         }
     }
 }
