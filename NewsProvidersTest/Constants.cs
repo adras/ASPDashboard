@@ -5,6 +5,9 @@ using System.Text;
 
 namespace NewsProvidersTest
 {
+    /// <summary>
+    /// Contains file paths of test data
+    /// </summary>
     internal sealed class Constants
     {
         private static string testDataDirectory = "TestData";

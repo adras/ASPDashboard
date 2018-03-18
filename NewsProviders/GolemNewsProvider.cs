@@ -9,10 +9,22 @@ using System.Threading.Tasks;
 
 namespace NewsProviders
 {
+    /// <summary>
+    /// Implementation of <see cref="NewsProviderBase"/> to fetch news from http://golem.de
+    /// </summary>
     public class GolemNewsProvider : NewsProviderBase
     {
+        /// <summary>
+        /// Fetches a list of <see cref="NewsItem"/> from the given stream which should point to http://golem.de
+        /// </summary>
+        /// <param name="documentStream">Stream to fetch <see cref="NewsItem"/> from</param>
+        /// <returns>List of <see cref="NewsItem"/></returns>
         public override IEnumerable<NewsItem> GetNewsItemsFromStream(Stream documentStream)
         {
+            if (documentStream == null)
+            {
+                throw new ArgumentNullException("documentStream");
+            }
             HtmlDocument doc = new HtmlDocument();
             doc.Load(documentStream, Encoding.Default);
 
@@ -20,14 +32,6 @@ namespace NewsProviders
 
             foreach (HtmlNode articleContainer in allArticleContainers)
             {
-                //foreach(HtmlNode node in articleContainer.SelectNodes("li/header/a"))
-                //{
-                //    string title = node.GetAttributeValue("title", null);
-                //    string link = node.GetAttributeValue("href", null);
-
-                //    NewsItem newsItem = new NewsItem(title, link, null);
-                //    yield return newsItem;
-                //}
                 foreach (HtmlNode node in articleContainer.SelectNodes("li"))
                 {
                     string title = node.SelectSingleNode("header/a").GetAttributeValue("title", null);

@@ -7,8 +7,14 @@ using Xunit;
 
 namespace NewsProvidersTest
 {
+    /// <summary>
+    /// Tests for the <see cref="GolemNewsProvider"/>
+    /// </summary>
     public class GolemNewsProviderTests
     {
+        /// <summary>
+        /// Validates that the number of news articles provided by the <see cref="GolemNewsProvider"/> is correct
+        /// </summary>
         [Fact]
         public void GolemNewsProvider_TestProvider_ItemCountCorrect()
         {
@@ -25,6 +31,11 @@ namespace NewsProvidersTest
             }
         }
 
+        /// <summary>
+        /// Validates that the articles provided by the provider are correct
+        /// </summary>
+        /// <param name="title">Title to verify</param>
+        /// <param name="link">Url to verify</param>
         [Theory]
         [InlineData("Ark Survival Evolved: Die Urzeitviecher kommen aufs Smartphone", "https://www.golem.de/news/ark-survival-evolved-die-urzeitviecher-kommen-auf-s-smartphone-1803-133367.html")]
         [InlineData("Plug-in-Hybrid: Volvo Polestar 1 wird teuer", "https://www.golem.de/news/plug-in-hybrid-volvo-polestar-1-wird-teuer-1803-133366.html")]

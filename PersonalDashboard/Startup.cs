@@ -10,6 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace PersonalDashboard
 {
+    /// <summary>
+    /// Startup configuration for the app
+    /// </summary>
+    /// <remarks>Sets up a SQLite databse context and MVC</remarks>
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -19,7 +23,10 @@ namespace PersonalDashboard
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// Configure the services to use by this app
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<NotesDbContext>(options => options.UseInMemoryDatabase("somename"));
@@ -27,7 +34,11 @@ namespace PersonalDashboard
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configure the app
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

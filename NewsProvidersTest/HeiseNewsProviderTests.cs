@@ -8,8 +8,14 @@ using Xunit;
 
 namespace NewsProvidersTest
 {
+    /// <summary>
+    /// Tests for the <see cref="HeiseNewsProvider"/>
+    /// </summary>
     public class HeiseNewsProviderTests
     {
+        /// <summary>
+        /// Validates that the number of news articles provided by the <see cref="HeiseNewsProvider"/> is correct
+        /// </summary>
         [Fact]
         public void HeiseNewsProvider_TestProvider_ItemCountCorrect()
         {
@@ -21,6 +27,11 @@ namespace NewsProvidersTest
             }
         }
 
+        /// <summary>
+        /// Validates that the articles provided by the provider are correct
+        /// </summary>
+        /// <param name="title">Title to verify</param>
+        /// <param name="link">Url to verify</param>
         [Theory]
         [InlineData("Workarounds für Probleme mit virtuellen Netzwerkkarten", "https://www.heise.de/security/meldung/Problematische-Windows-Updates-Workarounds-fuer-Schwierigkeiten-mit-virtuellen-Netzwerkkarten-3996689.html")]
         [InlineData("Die Suche nach Passierschein A38 im Büro 4.0", "https://www.heise.de/newsticker/meldung/KI-Assistenten-Die-Suche-nach-Passierschein-A38-im-Buero-4-0-3996162.html")]

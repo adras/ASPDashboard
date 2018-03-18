@@ -30,6 +30,10 @@ namespace PersonalDashboard.Pages
             Notes = await dbContext.Notes.AsNoTracking().ToListAsync();
         }
 
+        /// <summary>
+        /// Implementation of CreateNote handler to create a new note
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostCreateNoteAsync()
         {
             if (!ModelState.IsValid)
@@ -44,6 +48,11 @@ namespace PersonalDashboard.Pages
             return RedirectToPage("/Notes");
         }
 
+        /// <summary>
+        /// Implementation of DeleteNote handler to delete a given note
+        /// </summary>
+        /// <param name="id">Id of note to delete</param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostDeleteNoteAsync(int id)
         {
             Note note = await dbContext.Notes.FindAsync(id);
