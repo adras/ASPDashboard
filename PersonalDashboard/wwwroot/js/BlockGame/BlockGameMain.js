@@ -30,14 +30,34 @@ var BlockGame;
             placeBlock: false
         }
     };
+    let keyMap = {
+        68: 'right',
+        65: 'left',
+        87: 'up',
+        83: 'down',
+        74: 'rotateLeft',
+        75: 'rotateRight',
+        79: 'newBlock',
+        80: 'placeBlock'
+    };
     let gameCanvas;
     let gameCanvasContext;
     let textScore;
+    /**
+     * Gets a random integer number between min and max
+     * @param min minimum number (inclusive)
+     * @param max maximum number (inclusive)
+     */
     function randomRange(min, max) {
         // See: https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
         let result = Math.floor(Math.random() * (max - min + 1) + min);
         return result;
     }
+    /**
+     * Validates if the current block is within the game area
+     * @param xPos x-position of the block defaults to the current position in game state
+     * @param yPos y-position of the block defaults to the current position in game state
+     */
     function validateBlockPosition(xPos = state.blockXPos, yPos = state.blockYPos) {
         let blockArray = getCurrentBlockArray();
         for (let i = 0; i < 4; i++) {
@@ -60,6 +80,11 @@ var BlockGame;
         }
         return true;
     }
+    /**
+     * returns true if the current block collides with other blocks in the game area
+     * @param xPos x-position of the block defaults to the current position in game state
+     * @param yPos y-position of the block defaults to the current position in game state
+     */
     function blockCollidesWithOtherBlocks(xPos = state.blockXPos, yPos = state.blockYPos) {
         let blockArray = getCurrentBlockArray();
         for (let i = 0; i < 4; i++) {
@@ -77,12 +102,21 @@ var BlockGame;
         }
         return false;
     }
+    /**
+     * Gets the 2d array of the current block
+     */
     function getCurrentBlockArray() {
         return blockArrays[state.currentBlockIndex][state.currentBlockRotation];
     }
+    /**
+     * Main update loop
+     * @param progress
+     */
     function update(progress) {
+        // Update timers
         gameSpeedTimer.update(progress);
         keyboardTimer.update(progress);
+        // Move block down if the gamespeed timer is elapsed, place block if it collides with blocks below
         if (gameSpeedTimer.isElapsed()) {
             if (!blockCollidesWithOtherBlocks(state.blockXPos, state.blockYPos + 1)) {
                 state.blockYPos++;
@@ -117,29 +151,39 @@ var BlockGame;
                     state.blockYPos++;
                 }
             }
-            if (state.pressedKeys.placeBlock) {
-                placeCurrentBlock();
-            }
+            // Used for debugging, places the block at the current position
+            //if (state.pressedKeys.placeBlock) {
+            //    placeCurrentBlock();
+            //}
             if (state.pressedKeys.rotateLeft) {
                 rotateLeft();
             }
             if (state.pressedKeys.rotateRight) {
                 rotateRight();
             }
-            if (state.pressedKeys.newBlock) {
-                setCurrentBlockToRandom();
-            }
+            // Used for debugging Replaces the current block with a new random block
+            //if (state.pressedKeys.newBlock) {
+            //    setCurrentBlockToRandom();
+            //}
         }
         updateScore();
     }
+    /**
+     * Creates a new block, used after a block was placed
+     */
     function createNewBlock() {
         setCurrentBlockToRandom();
         state.blockXPos = blockCountX / 2;
         state.blockYPos = 0;
         if (blockCollidesWithOtherBlocks()) {
+            // Currently an endless loop
+            // TODO: Add restart button
             alert("Game Over");
         }
     }
+    /**
+     * Places the current block in the game area and removes lines if necessary
+     */
     function placeCurrentBlock() {
         let blockArray = getCurrentBlockArray();
         for (let i = 0; i < blockArray.length; i++) {
@@ -150,10 +194,17 @@ var BlockGame;
                     gameArea[deltaX][deltaY] = 1;
             }
         }
+        // Get a new block for the player
         createNewBlock();
+        // add some score for placing the block
         state.score += 100;
+        // remove lines which are now complete
         removeCompleteLines();
     }
+    /**
+     * Removes a single line from the game area and moves all lines on top one line down
+     * @param yPos position to remove line from
+     */
     function removeLine(yPos) {
         for (let j = yPos; j > 0; j--) {
             for (let i = 0; i < blockCountX; i++) {
@@ -161,7 +212,12 @@ var BlockGame;
             }
         }
     }
+    /**
+     * Removes all the complete lines from the game area
+     */
     function removeCompleteLines() {
+        // for each line count the blocks in x direction, if it the same as the game with, the line is complete and can
+        // be removed
         let removedLines = 0;
         for (let j = blockCountY - 1; j >= 0; j--) {
             let blockCount = 0;
@@ -177,9 +233,14 @@ var BlockGame;
             }
             blockCount = 0;
         }
+        // Add some score using the formula (l+1)^2 * 1000 to give exponentially more points the more lines were removed
         if (removedLines > 0)
             state.score += Math.pow(removedLines + 1, 2) * 1000;
     }
+    /**
+     * Draws a complete game block using the given color
+     * @param colorString html color string to use
+     */
     function drawBlock(colorString) {
         gameCanvasContext.fillStyle = colorString;
         let blockArray = getCurrentBlockArray();
@@ -193,6 +254,9 @@ var BlockGame;
             }
         }
     }
+    /**
+     * Draws the entire game area - all the blocks currently placed
+     */
     function drawGameArea() {
         for (let i = 0; i < blockCountX; i++) {
             for (let j = 0; j < blockCountY; j++) {
@@ -201,7 +265,10 @@ var BlockGame;
             }
         }
     }
-    function rotateLeft() {
+    /**
+     * Rotates the current block right
+     */
+    function rotateRight() {
         state.currentBlockRotation++;
         if (state.currentBlockRotation > 3)
             state.currentBlockRotation = 0;
@@ -214,7 +281,10 @@ var BlockGame;
             rotateRight();
         }
     }
-    function rotateRight() {
+    /**
+     * Rotates the current block left
+     */
+    function rotateLeft() {
         state.currentBlockRotation--;
         if (state.currentBlockRotation < 0)
             state.currentBlockRotation = 3;
@@ -227,36 +297,40 @@ var BlockGame;
             rotateLeft();
         }
     }
+    /**
+     * Draws a block part using the given color at the given position
+     * @param colorString html-color-string to use
+     * @param xBlockPos position to draw block at
+     * @param yBlockPos position to draw block at
+     */
     function drawSimpleBlock(colorString, xBlockPos, yBlockPos) {
         let xPos = xBlockPos * blockSizeX;
         let yPos = yBlockPos * blockSizeY;
         gameCanvasContext.fillStyle = colorString;
         gameCanvasContext.fillRect(xPos, yPos, blockSizeX, blockSizeY);
     }
+    /**
+     * Clears the canvas
+     */
     function clearCanvas() {
         gameCanvasContext.fillStyle = "#AAAAAA";
         gameCanvasContext.fillRect(0, 0, gameWidth, gameHeight);
     }
+    /**
+     * Draws the hole game
+     */
     function draw() {
+        // clear canvas
         clearCanvas();
-        // Draw the state of the world
-        //$"cvsGameArea"
-        if (state.pressedKeys.left) {
-            gameCanvasContext.fillStyle = "#FF00FF";
-        }
-        if (state.pressedKeys.right) {
-            gameCanvasContext.fillStyle = "#00FFFF";
-        }
-        if (state.pressedKeys.up) {
-            gameCanvasContext.fillStyle = "#FFFF00";
-        }
-        if (state.pressedKeys.down) {
-            gameCanvasContext.fillStyle = "#00FF00";
-        }
+        // Draw the current block of the player
         drawBlock("#FFAA00");
+        // Draw all the blocks already placed
         drawGameArea();
-        //drawSimpleBlock();
     }
+    /**
+     * Main game loop to trigger update and draw
+     * @param timestamp
+     */
     function loop(timestamp) {
         let progress = timestamp - lastRender;
         update(progress);
@@ -264,14 +338,25 @@ var BlockGame;
         lastRender = timestamp;
         window.requestAnimationFrame(loop);
     }
+    /**
+     * Handler for key down event
+     * @param event
+     */
     function keydown(event) {
         let key = keyMap[event.keyCode];
         state.pressedKeys[key] = true;
     }
+    /**
+     * Handler for key up event
+     * @param event
+     */
     function keyup(event) {
         let key = keyMap[event.keyCode];
         state.pressedKeys[key] = false;
     }
+    /**
+     * Initializes the game area by clearing the gameArea array
+     */
     function initializeGameArea() {
         gameArea = new Array(blockCountX);
         for (let i = 0; i < gameArea.length; i++) {
@@ -281,23 +366,26 @@ var BlockGame;
             }
         }
     }
-    function fillArray(array) {
-        for (let i = 0; i < array.length; i++) {
-            array[i];
-        }
-    }
+    /**
+     * Initializes the canvas element by setting it's size, also initializes the canvasContext
+     */
     function initializeCanvas() {
-        //gameCanvas = $("#canvasGameArea")[0];
         gameCanvas = document.getElementById("canvasGameArea");
         gameCanvas.width = gameWidth;
         gameCanvas.height = gameHeight;
         gameCanvasContext = gameCanvas.getContext("2d");
     }
+    /**
+     * Registers the events for keydown, keyup and the main update loop
+     */
     function initializeEvents() {
         window.addEventListener("keydown", keydown, false);
         window.addEventListener("keyup", keyup, false);
         window.requestAnimationFrame(loop);
     }
+    /**
+     * Initializues the block arrays
+     */
     function initializeBlocks() {
         blockArrays = new Array(7);
         blockArrays[0] = BlockGame.BlockFactory.createCubeBlock();
@@ -308,18 +396,30 @@ var BlockGame;
         blockArrays[5] = BlockGame.BlockFactory.createZBlockLeft();
         blockArrays[6] = BlockGame.BlockFactory.createZBlockRight();
     }
+    /**
+     * Sets the current block to a new random block
+     */
     function setCurrentBlockToRandom() {
         let newBlockNumber = randomRange(0, 6);
         state.currentBlockIndex = newBlockNumber;
     }
+    /**
+     * Initializes the score html-element and sets score to 0
+     */
     function initializeScore() {
         //textScore = $("#textScore")[0];
         textScore = document.getElementById("textScore");
         updateScore();
     }
+    /**
+     * Sets the content of the score element to the current score
+     */
     function updateScore() {
         textScore.innerHTML = "Score: " + state.score;
     }
+    /**
+     * Initializes the game
+     */
     function initialize() {
         initializeCanvas();
         initializeBlocks();
@@ -330,16 +430,6 @@ var BlockGame;
         // This has to be called last since it starts the game
         initializeEvents();
     }
-    let keyMap = {
-        68: 'right',
-        65: 'left',
-        87: 'up',
-        83: 'down',
-        74: 'rotateLeft',
-        75: 'rotateRight',
-        79: 'newBlock',
-        80: 'placeBlock'
-    };
     //$(document).ready(initialize);
     window.onload = initialize;
 })(BlockGame || (BlockGame = {}));
